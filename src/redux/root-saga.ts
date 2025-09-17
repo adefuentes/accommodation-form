@@ -1,7 +1,10 @@
-import {all} from "redux-saga/effects";
+import {all, fork} from "redux-saga/effects";
+import {watchCheckInputValueAction} from "../features/accommodation/redux/sagas.ts";
 
 const rootSaga = function* () {
-  yield all([]);
+  yield all([
+    fork(watchCheckInputValueAction),
+  ]);
 }
 
 export default rootSaga;
