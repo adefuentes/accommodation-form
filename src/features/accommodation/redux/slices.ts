@@ -1,66 +1,41 @@
 import {
   ACCOMMODATION,
+  type AccommodationReducers,
   type AccommodationState,
-  type AccommodationTypes,
+  type Image,
 } from "./types.ts";
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { normalizeState, unNormalizeState } from "../../../utils.ts";
 
 export const initialState: AccommodationState = {
   name: {
     value: "",
     isValid: true,
     isRequired: true,
-    errors: [
-      {
-        message: "Length between 4 and 128 characters.",
-        type: "length-4-128",
-        found: false,
-      },
-      {
-        message: "Numbers are not allowed.",
-        type: "no-numbers",
-        found: false,
-      },
-    ],
+    regex: "^[^\\d]{4,128}$",
+    errorLabel: "Length between 4 and 128 characters, numbers are not allowed.",
   },
   address: {
     value: "",
-    isValid: false,
+    isValid: true,
     isRequired: true,
-    errors: [
-      {
-        message: "Length between 4 and 128 characters.",
-        type: "length-4-128",
-        found: false,
-      },
-    ],
+    regex: "^.{4,128}$",
+    errorLabel: "Length between 4 and 128 characters.",
   },
   description: {
     value: "",
-    isValid: false,
+    isValid: true,
     isRequired: false,
-    errors: [
-      {
-        message: "Length between 128 and 2048 characters.",
-        type: "length-128-2048",
-        found: false,
-      },
-    ],
+    regex: "^.{128,2048}$",
+    errorLabel: "Length between 128 and 2048 characters.",
   },
-  type: undefined,
-  images: [],
+  type: "",
+  images: {},
+  loadingFile: false,
 };
 
-const reducers = {
-  checkInputValueAction: (
-    state: AccommodationState,
-    {
-      payload: { field, value },
-    }: PayloadAction<{
-      field: "name" | "address" | "description";
-      value: string;
-    }>,
-  ) => {
+const reducers: AccommodationReducers = {
+  checkInputValueAction: (state, { payload: { field, value } }) => {
     state[field] = {
       ...state[field],
       isValid: true,
@@ -68,30 +43,24 @@ const reducers = {
     };
     state[field].isValid = true;
   },
-  setErrorAction: (
-    state: AccommodationState,
-    {
-      payload: { field, errorIndex, found },
-    }: PayloadAction<{
-      field: "name" | "address" | "description";
-      errorIndex: number;
-      found: boolean;
-    }>,
-  ) => {
-    state[field].errors[errorIndex].found = found;
+  setErrorAction: (state, { payload: { field, found } }) => {
+    state[field].isValid = found;
   },
-  setImageAction: (
-    state: AccommodationState,
-    { payload: { image } }: PayloadAction<{ image: string }>,
-  ) => {
-    if (state.images.length === 2) return;
-    state.images.push(image);
+  setImageAction: (state, { payload }) => {
+    const images = unNormalizeState<Image>(state.images);
+    if (images.length === 2) return;
+    images.push(payload);
+    state.images = normalizeState(images);
+    state.loadingFile = false;
   },
-  setAccommodationType: (
-    state: AccommodationState,
-    { payload: { type } }: PayloadAction<{ type: AccommodationTypes }>,
-  ) => {
+  setAccommodationType: (state, { payload: { type } }) => {
     state.type = type;
+  },
+  checkImage: (state) => {
+    state.loadingFile = true;
+  },
+  deleteImage: (state, { payload: { id } }) => {
+    delete state.images[id];
   },
 };
 
@@ -106,5 +75,7 @@ export const {
   setErrorAction,
   setImageAction,
   setAccommodationType,
+  checkImage,
+  deleteImage,
 } = accommodationSlice.actions;
 export default accommodationSlice.reducer;

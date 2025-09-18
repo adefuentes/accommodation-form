@@ -1,20 +1,15 @@
-import {Provider} from "react-redux";
+import Form from "./pages/Form.tsx";
+import { Provider } from "react-redux";
+import { Toaster } from "react-hot-toast";
 import store from "./redux/store";
-import AccommodationPage from "./pages/Accommodation.tsx";
-import OwnerPage from "./pages/Owner.tsx";
-import ResumePage from "./pages/Resume.tsx";
-
 
 export default function App() {
   return (
     <div className="flex flex-col h-screen max-w-full p-4 w-2xl mx-auto">
       <Provider store={store}>
-        <div>
-          <AccommodationPage />
-          <OwnerPage />
-          <ResumePage />
-        </div>
+        <Form />
+        <Toaster position="top-right" />
       </Provider>
     </div>
-  )
+  );
 }
