@@ -19,7 +19,7 @@ export default function Form({
   const total = useSelector(getTotalSteps);
 
   return (
-    <div className="flex flex-col mix-h-screen pb-8">
+    <div className="flex flex-col mix-h-screen">
       <h1 className="text-4xl font-bold pb-4">Accommodation form</h1>
       <Step
         number={1}
