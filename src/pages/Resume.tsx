@@ -1,11 +1,11 @@
-import { useSelector } from "react-redux";
-import { getAccommodationData } from "../features/accommodation/redux/selectors.ts";
-import { getOwnerData } from "../features/owner/redux/selectors.ts";
-import { useMemo } from "react";
-import { unNormalizeState } from "../utils.ts";
+import { type FormEvent } from "react";
 import { Image } from "../components/Image.tsx";
 import { Button } from "../components/Button.tsx";
 import type { AccommodationTypes } from "../features/accommodation/redux/types.ts";
+import toast from "react-hot-toast";
+import { ResumeItem } from "../features/resume/components/ResumeItem.tsx";
+import { useGetAccommodationData } from "../features/accommodation/hooks/data.ts";
+import { useGetOwnerData } from "../features/owner/hooks/data.ts";
 
 const ACCOMMODATION_TYPES_DICT = {
   house: "House",
@@ -15,79 +15,90 @@ const ACCOMMODATION_TYPES_DICT = {
 
 export default function ResumePage({
   onNext,
+  onSubmit,
 }: {
   onNext: (step: number) => void;
+  onSubmit: (data: unknown) => void;
 }) {
-  const accommodation = useSelector(getAccommodationData);
-  const owner = useSelector(getOwnerData);
+  const { data: accommodation, images } = useGetAccommodationData();
+  const { data: owner } = useGetOwnerData();
 
-  const images = useMemo(
-    () => unNormalizeState(accommodation.images),
-    [accommodation.images],
-  );
+  const _onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const random = Math.floor(Math.random() * 100);
+    const payload = {
+      accommodation: {
+        name: accommodation.name.value,
+        address: accommodation.address.value,
+        description: accommodation.description.value,
+        type: accommodation.type,
+        images: images.map((image) => image.src),
+      },
+      owner: {
+        name: owner.name.value,
+        email: owner.email.value,
+        phone: owner.phone.value,
+      },
+    };
+    onSubmit(payload);
+
+    if (random < 50) {
+      toast.success("Your application has been submitted successfully!");
+    } else {
+      toast.error("Your application has been rejected!");
+    }
+  };
 
   return (
-    <form action="" className="flex flex-col gap-4">
+    <form onSubmit={_onSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold">Accommodation</h2>
-        <ul className="flex flex-col gap-1">
-          <li>
-            <p>
-              <span>Name: </span>
-              {accommodation.name.value}
-            </p>
-          </li>
-          <li>
-            <p>
-              <span>Address: </span>
-              {accommodation.address.value}
-            </p>
-          </li>
+        <div className="flex flex-col gap-1">
+          <ResumeItem label="Name" value={accommodation.name.value} />
+          <ResumeItem label="Address" value={accommodation.address.value} />
           {accommodation.description.value && (
-            <li>
-              <p>
-                <span>Description: </span>
-                {accommodation.description.value}
-              </p>
-            </li>
+            <ResumeItem
+              label="Description"
+              value={accommodation.description.value}
+            />
           )}
-          <li>
-            <p>
-              <span>Type: </span>
-              {ACCOMMODATION_TYPES_DICT[accommodation.type]}
-            </p>
-          </li>
+          <ResumeItem
+            label="Type"
+            value={ACCOMMODATION_TYPES_DICT[accommodation.type]}
+          />
           {images.length > 0 && (
-            <li>
-              <p>Photos:</p>
-              {images.map((image) => (
-                <Image key={image.id} image={image} />
-              ))}
-            </li>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-semibold">Photos:</p>
+              <div className="flex items-center gap-2">
+                {images.map((image) => (
+                  <Image key={image.id} image={image} />
+                ))}
+              </div>
+            </div>
           )}
-        </ul>
+        </div>
       </div>
+      <div className="w-full h-0.25 bg-neutral-300" />
       <div className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold">Owner</h2>
         <ul className="flex flex-col gap-1">
           <li>
-            <p>
-              <span>Name: </span>
-              {owner.name.value}
-            </p>
+            <ResumeItem label="Name" value={owner.name.value} />
           </li>
           <li>
-            <p>
-              <span>Email: </span>
-              {owner.email.value}
-            </p>
+            <ResumeItem
+              label="Email"
+              link={`mailto:${owner.email.value}`}
+              value={owner.email.value}
+            />
           </li>
           {owner.phone.value && (
             <li>
-              <p>
-                <span>Phone: </span>
-                {owner.phone.value}
-              </p>
+              <ResumeItem
+                label="Phone"
+                link={`tel:${owner.phone.value}`}
+                value={owner.phone.value}
+              />
             </li>
           )}
         </ul>

@@ -24,7 +24,11 @@ export const Selector = <T extends string | undefined>({
           defaultValue={value}
         >
           {options.map((option) => (
-            <option key={option.value ?? 0} value={option.value}>
+            <option
+              key={option.value ?? 0}
+              role={option.value}
+              value={option.value}
+            >
               {option.label}
             </option>
           ))}

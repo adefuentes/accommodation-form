@@ -1,19 +1,14 @@
 import { Input } from "../components/Input.tsx";
-import { useSelector } from "react-redux";
-import {
-  getOwnerData,
-  isNextAvailable,
-} from "../features/owner/redux/selectors.ts";
 import { Button } from "../components/Button.tsx";
 import { useOwnerActions } from "../features/owner/hooks/actions.ts";
+import { useGetOwnerData } from "../features/owner/hooks/data.ts";
 
 export default function OwnerPage({
   onNext,
 }: {
   onNext: (step: number) => void;
 }) {
-  const data = useSelector(getOwnerData);
-  const isAvailable = useSelector(isNextAvailable);
+  const { data, isAvailable } = useGetOwnerData();
   const { checkInputValue } = useOwnerActions();
 
   return (

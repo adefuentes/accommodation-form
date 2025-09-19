@@ -36,7 +36,7 @@ export const Step = ({
       <div className="flex gap-4 h-full">
         <div className="h-full px-3.5 md:px-4.5 lg:px-5.5">
           {!last ? (
-            <div className="w-[3px] h-full bg-neutral-300 overflow-hidden">
+            <div className="w-0.75 h-full bg-neutral-300 overflow-hidden">
               <div
                 className={`h-full ${!passed ? "translate-y-[-100%]" : "translate-y-0"} transition-transform duration-1200 w-full bg-neutral-900`}
               ></div>
@@ -44,7 +44,7 @@ export const Step = ({
           ) : null}
         </div>
         <div
-          className={`w-full transition-opacity duration-1000 pt-2 pb-4 ${selected ? "opacity-100" : "pointer-events-none opacity-40"}`}
+          className={`w-full transition-all delay-200 duration-1500 ease-in-out overflow-hidden pt-2 pb-4 ${selected ? "max-h-500 opacity-100" : "max-h-0 opacity-0"}`}
         >
           {selected || passed ? children : null}
         </div>

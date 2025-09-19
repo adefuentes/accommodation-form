@@ -9,7 +9,11 @@ import {
   getTotalSteps,
 } from "../features/form/redux/selectors.ts";
 
-export default function Form() {
+export default function Form({
+  onSubmit,
+}: {
+  onSubmit: (data: unknown) => void;
+}) {
   const { nextStep } = useFormActions();
   const current = useSelector(getCurrentStep);
   const total = useSelector(getTotalSteps);
@@ -43,7 +47,7 @@ export default function Form() {
         selected={current === 2}
         last={true}
       >
-        <ResumePage onNext={nextStep} />
+        <ResumePage onSubmit={onSubmit} onNext={nextStep} />
       </Step>
     </div>
   );

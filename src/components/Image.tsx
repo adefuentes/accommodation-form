@@ -10,6 +10,7 @@ export const Image = ({
   return (
     <div className="size-32 group overflow-hidden rounded-lg relative">
       <img
+        role="image"
         className="size-32 object-cover"
         src={image.src}
         alt={`Photo-${image.id + 1}`}

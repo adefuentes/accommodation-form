@@ -1,17 +1,11 @@
 import { Input } from "../components/Input.tsx";
-import { useSelector } from "react-redux";
-import {
-  getAccommodationData,
-  isNextAvailable,
-} from "../features/accommodation/redux/selectors.ts";
 import { useAccommodationActions } from "../features/accommodation/hooks/actions.ts";
 import { Button } from "../components/Button.tsx";
 import { Selector } from "../components/Selector.tsx";
 import type { AccommodationTypes } from "../features/accommodation/redux/types.ts";
 import { InputImage } from "../components/InputImage.tsx";
 import { Image } from "../components/Image.tsx";
-import { useMemo } from "react";
-import { unNormalizeState } from "../utils.ts";
+import { useGetAccommodationData } from "../features/accommodation/hooks/data.ts";
 
 const ACC_TYPE_OPTIONS = [
   { label: "Select one type", value: "" },
@@ -31,10 +25,7 @@ export default function AccommodationPage({
     selectAccommodationType,
     removeImage,
   } = useAccommodationActions();
-  const data = useSelector(getAccommodationData);
-  const isAvailable = useSelector(isNextAvailable);
-  const images = useMemo(() => unNormalizeState(data.images), [data.images]);
-
+  const { data, images, isAvailable } = useGetAccommodationData();
   return (
     <div className="flex flex-col gap-4">
       <Input
